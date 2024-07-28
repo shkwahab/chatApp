@@ -6,10 +6,8 @@ const Routing = () => {
     return (
         <BrowserRouter>
             <Routes>
-                
                     <Route path="/login" element={<ProtectedRoutes> <Login /></ProtectedRoutes>} />
                     <Route path="/" element={<ProtectedRoutes> <Home /> </ProtectedRoutes>} />
-                
             </Routes>
         </BrowserRouter>
     );

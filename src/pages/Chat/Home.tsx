@@ -1,7 +1,11 @@
+import React from 'react'
+import ChatApp from "../../components/Chat/Home"
 const Home = () => {
-    return (
-        <div>Home</div>
-    )
+  return (
+    <React.Fragment>
+        <ChatApp/>
+    </React.Fragment>
+  )
 }
 
 export default Home

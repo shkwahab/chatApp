@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Auth, login } from '../../apis/types';
+import { Link } from 'react-router-dom'
+import { Auth, login, User } from '../../apis/types';
 import { useMutation } from '@tanstack/react-query';
 import { getUser, loginFunc } from '../../apis/auth.api';
 import { showErrorNotification, showSuccessNotification } from '../../utils/notifcation';
@@ -10,13 +10,9 @@ import { login as setAuth } from '../../redux/slices/auth-slice';
 
 const Login = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const [user, setUser] = useState(null)
-    const router = useNavigate();
+    let user: User;
     const getUserMutation = useMutation({
-        mutationFn: getUser,
-        onSuccess: (data: any) => {
-            setUser(data?.data)
-        }
+        mutationFn: getUser
     })
     const mutation = useMutation({
         mutationFn: loginFunc,
@@ -25,15 +21,17 @@ const Login = () => {
             console.log(response)
             localStorage.setItem("token", response?.token)
             const body = { token: response?.token }
-            await getUserMutation.mutateAsync(body)
+            await getUserMutation.mutateAsync(body).then((res) => {
+                const authCtx: Auth = {
+                    isLogin: true,
+                    user:res?.data,
+                    token: response?.token,
+                    tokenExpiry: String(response?.expires)
+                }
+                dispatch(setAuth(authCtx))
+            })
             showSuccessNotification(data.message)
-            const authCtx: Auth = {
-                isLogin: true,
-                user,
-                token: response?.token,
-                tokenExpiry: String(response?.expires)
-            }
-            dispatch(setAuth(authCtx))
+
 
         },
         onError: (error: any) => {
@@ -51,7 +49,6 @@ const Login = () => {
             const body: login = { email, password };
             // Call the mutation function with the form data
             await mutation.mutateAsync(body);
-            router("/");
         } catch (error) {
             // console.log(error)
         }

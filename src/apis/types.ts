@@ -5,7 +5,6 @@ export type login = {
 
 export type User = {
     _id: string
-    _v: number
     name: string
     img: string
     created_At: Date
